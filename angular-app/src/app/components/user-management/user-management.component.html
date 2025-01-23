@@ -1,0 +1,45 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="close()"></div>
+<div class="modal" *ngIf="isOpen">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>User Management</h2>
+      <button class="close-button" (click)="close()">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{user.username}}</td>
+            <td> 
+              <span [class]="user.role === 'admin' ? 'admin-role': 'user-role' " > {{user.role}}</span>
+            </td>
+            <td>{{user.created_at | date:'MMM d, y'}}</td>
+            <td>
+              <button 
+                *ngIf="user.role !== 'admin' && user.username !== 'admin' " 
+                (click)="changeRole(user.id)" 
+                class="promote-button">
+                Make Admin
+              </button>
+              <button
+                *ngIf="user.role==='admin' && user.username !== 'admin' "
+                (click)="demoteRole(user.id)"
+                class="demote-button"
+              >
+              Remove admin
+            </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

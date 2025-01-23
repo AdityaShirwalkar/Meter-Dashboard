@@ -1,0 +1,19 @@
+<div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Unit No.</th>
+          <th>Meter Type</th>
+          <th>Model Name</th>
+          <th>Description</th>
+          <th>IP Address</th>
+          <th>Communication ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of data" (click)="onRowClick(row)" [class.selected]="row === selectedRow">
+          <td *ngFor="let column of columns">{{ row[column] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

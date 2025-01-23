@@ -1,0 +1,24 @@
+<div class="menu-container">
+  <div class="menu-section">
+    <div class="menu-item" 
+         [class.active]="isActive('dashboard')" 
+         (click)="setCurrentItem('dashboard')">
+      <span>Dashboard</span>
+    </div>
+    <div class="menu-item" 
+         [class.active]="isActive('devices')" 
+         (click)="setCurrentItem('devices')">
+      <span>Meters</span>
+    </div>
+    <div class="menu-item" 
+         [class.active]="isActive('firmware')" 
+         (click)="setCurrentItem('firmware')">
+      <span>Firmware</span>
+    </div>
+    <div class="menu-item" 
+         [class.active]="isActive('state')" 
+         (click)="setCurrentItem('state')">
+      <span>State</span>
+    </div>
+  </div>
+</div>

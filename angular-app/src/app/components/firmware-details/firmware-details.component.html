@@ -1,0 +1,80 @@
+<div class="firmware-container">
+  <div class="firmware-header">
+    <h2>Firmware Management</h2> 
+
+    <button class="btn-create" (click)="OpenModal()">Import firmware</button>
+  </div>
+  
+  <div class="firmware-content">
+    <div class="firmware-stats">
+      <div class="stat-card" 
+           (click)="filterData('all')"
+           [class.active]="currentFilter === 'all'">
+        <h3>Total Devices</h3>
+        <p>{{ totalDevices }}</p>
+      </div>
+      <div class="stat-card" 
+           (click)="filterData('pending')"
+           [class.active]="currentFilter === 'pending'">
+        <h3>Pending Updates</h3>
+        <p>{{ pendingUpdates }}</p>
+      </div>
+      <div class="stat-card" 
+           (click)="filterData('available')"
+           [class.active]="currentFilter === 'available'">
+        <h3>Available Firmware</h3>
+        <p>{{ availableFirmware }}</p>
+      </div>
+    </div>
+
+    <div class="firmware-table">
+      <h3>Firmware Details</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Unit No.</th>
+            <th>Current Version</th>
+            <th>Available Version</th>
+            <th>Last Updated</th>
+            <th>Availability</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredFirmwareData">
+            <td>{{ item.MeterNo }}</td>
+            <td>{{ item.Firmware_version ? 'Ver. ' + item.Firmware_version : '-' }}</td>
+            <td>{{ item.available_version ? 'Ver. ' + item.available_version : '-' }}</td>
+            <td>{{ formatDate(item.activation_date) }}</td>
+            <td>
+              <span [class]="item.firmware_availability ? 'status-up-to-date' : 'status-pending'">
+                {{ item.firmware_availability ? 'Available' : 'Not Available' }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="material-icons delete-icon"
+                (click)="confirmDelete(item.MeterNo)">delete</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!-- Dialog -->
+ <app-alert-dialog
+ [isOpen]="showDeleteDialog"
+ title="Delete Firmware"
+ [description]="'Are you sure you want to delete the firmware for Unit No. ' + deletingMeterNo + '? This action cannot be undone.'"
+ (confirm)="handleDeleteConfirmed()"
+ (cancel)="handleDeleteCancelled()">
+ </app-alert-dialog>
+
+ <app-firmware-version-modal
+  [isOpen]="isVersionModalOpen"
+  (close)="handleVersionModalClose()"
+  (save)="handleVersionModalSave($event)"
+ >
+ </app-firmware-version-modal>
+
+</div>  

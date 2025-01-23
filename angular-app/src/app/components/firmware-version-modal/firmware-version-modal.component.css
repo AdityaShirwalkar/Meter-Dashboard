@@ -1,0 +1,159 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-dialog {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+  pointer-events: none;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: none;
+  outline: 0;
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: #2c3e50;
+  color: #fff;
+  padding: 1.1rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1.15rem;
+  background-color: #f8f9fa;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group-last {
+  margin-top: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.input-row label {
+  min-width: 150px;
+}
+
+.form-control {
+  width: 260px;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+
+.form-dropdown{
+  width: 278px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-close, .btn-update {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-close {
+  background-color: rgb(233, 127, 127);
+  color: white;
+}
+
+.btn-close:hover {
+  background-color: rgb(248, 98, 98);
+}
+
+.btn-update {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn-update:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.version-selection-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.6rem;
+  /* margin: 1.4rem; */
+  margin-bottom: 0.5rem;
+}
+
+.radio-option1 {
+  margin-right: 1.2rem;
+  margin-left: 0px;
+  left: 0;
+}
+
+.radio-option2 {
+  margin-left: 1.2rem;
+  margin-right: 0px;
+  right: 0;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}

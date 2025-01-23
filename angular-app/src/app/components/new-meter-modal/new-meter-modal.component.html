@@ -1,0 +1,81 @@
+<div class="modal" *ngIf="isOpen" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Meter</h5>
+      </div>
+      <div class="modal-body">
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="newType" name="meterTypeChoice" [(ngModel)]="isNewMeterType" [value]="true">
+            <label for="newType">Using New Meter Type</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="existingType" name="meterTypeChoice" [(ngModel)]="isNewMeterType" [value]="false">
+            <label for="existingType">Using Existing Meter Type</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>Unit No:</label>
+            <input type="number" [(ngModel)]="newMeterData.UnitNo" (ngModelChange)="checkUnitNoUniqueness()" class="form-control">
+          </div>
+          <span *ngIf="!isUnitNoUnique && newMeterData.UnitNo" class="error-message">Unit number must be unique</span>
+        </div>
+        
+        <div class="form-group">
+          <div class="input-row">
+            <label>Meter Type:</label>
+            <input *ngIf="isNewMeterType" 
+                   [(ngModel)]="newMeterData.Metertype" 
+                   (ngModelChange)="checkMeterTypeUniqueness()"
+                   class="form-control" 
+                   placeholder="Enter new meter type">
+            <select *ngIf="!isNewMeterType" [(ngModel)]="newMeterData.Metertype" class="form-control">
+              <option value="">Select a meter type</option>
+              <option *ngFor="let type of existingMeterTypes" [value]="type">
+                {{type}}
+              </option>
+            </select>
+          </div>
+          <span *ngIf="!isMeterTypeUnique && isNewMeterType && newMeterData.Metertype" class="error-message">Meter type already exists</span>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>Model:</label>
+            <input [(ngModel)]="newMeterData.Model" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>Description:</label>
+            <input [(ngModel)]="newMeterData.description" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>IP Address:</label>
+            <input [(ngModel)]="newMeterData.ip_address" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>Communication ID:</label>
+            <input [(ngModel)]="newMeterData.communication_id" class="form-control">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" (click)="close.emit()">Cancel</button>
+        <button class="btn-update" 
+                [disabled]="!isFormValid || !isUnitNoUnique" 
+                (click)="onSave()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>

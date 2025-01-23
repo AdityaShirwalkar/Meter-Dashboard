@@ -1,0 +1,230 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f9fc;
+    padding: 0.2rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+  
+.login-box {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 400px;
+    transition: all 0.3s ease;
+}
+  
+.login-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+  
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+  
+.login-header h2 {
+    color: #1a365d;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+  
+.login-header p {
+    color: #64748b;
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+}
+  
+.form-group {
+    margin-bottom: 1.75rem;
+}
+  
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #334155;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+  
+.form-control {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+    box-sizing: border-box;
+    background-color: white;
+}
+  
+.form-control:focus {
+    border-color: #22c55e;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+  
+.form-control:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+}
+  
+.login-btn {
+    width: 60%;
+    margin: 0 auto;
+    padding: 0.875rem;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.login-btn:hover:not(:disabled) {
+    background-color: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(34, 197, 94, 0.25);
+}
+  
+.login-btn:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+  
+.error-container {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+  
+.error-message {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin: 0;
+    padding: 0.75rem;
+    background-color: #fef2f2;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
+}
+
+.toggle-mode {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: #22c55e;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    text-decoration: underline;
+}
+
+.toggle-btn:hover:not(:disabled) {
+    color: #16a34a;
+    transform: translateY(-1px);
+}
+
+.toggle-btn:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+  
+@media (max-width: 480px) {
+    .login-box {
+        padding: 1.75rem;
+    }
+  
+    .login-header h2 {
+        font-size: 1.75rem;
+    }
+  
+    .form-control {
+        padding: 0.75rem;
+    }
+    
+    .login-btn {
+        width: 80%;
+    }
+
+    .toggle-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* Animation for form transition */
+.form-group {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.form-group.ng-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.form-group.ng-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Password strength indicator styles */
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.strength-meter {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.25rem;
+    background-color: #e2e8f0;
+    overflow: hidden;
+}
+
+.strength-meter-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    width: 0%;
+}
+
+.strength-weak {
+    width: 33.33%;
+    background-color: #ef4444;
+}
+
+.strength-medium {
+    width: 66.66%;
+    background-color: #f59e0b;
+}
+
+.strength-strong {
+    width: 100%;
+    background-color: #22c55e;
+}
+
+/* 1 */

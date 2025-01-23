@@ -1,0 +1,45 @@
+<div class="devices-container">
+  <div class="devices-header">
+    <h2>Meter Control</h2>
+  </div>
+  
+  <div class="devices-content">
+    <div class="devices-stats">
+      <div 
+        *ngFor="let type of meterTypes" 
+        class="stat-card" 
+        [class.active]="selectedType === type"
+        (click)="selectType(type)"
+      >
+        <h3>Type {{type}} Devices</h3>
+        <p>{{getTypeCount(type)}}</p>
+      </div>
+    </div>
+
+    <div class="devices-table">
+      <h3>Device Information</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Unit No.</th>
+              <th>Model</th>
+              <th>Description</th>
+              <th>IP Address</th>
+              <th>Communication ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let device of filteredDevices">
+              <td>{{device.UnitNo}}</td>
+              <td>{{device.Model}}</td>
+              <td>{{device.description}}</td>
+              <td>{{device.ip_address}}</td>
+              <td>{{device.communication_id}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

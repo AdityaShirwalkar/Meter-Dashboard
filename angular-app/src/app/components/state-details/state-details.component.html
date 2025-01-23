@@ -1,0 +1,67 @@
+<div class="state-container">
+  <div class="state-header">
+    <h2>State Management</h2>
+  </div>
+
+  <div class="state-content">
+    <div class="state-stats">
+      <div class="stat-card" 
+           (click)="filterData('all')"
+           [class.active]="currentFilter === 'all'">
+        <h3>Total Units</h3>
+        <p>{{ totalUnits }}</p>
+      </div>
+      <div class="stat-card" 
+           (click)="filterData('discovered')"
+           [class.active]="currentFilter === 'discovered'">
+        <h3>Discovered Units</h3>
+        <p>{{ discoveredUnits }}</p>
+      </div>
+      <div class="stat-card" 
+           (click)="filterData('error')"
+           [class.active]="currentFilter === 'error'">
+        <h3>Units in Error</h3>
+        <p>{{ unitsInError }}</p>
+      </div>
+    </div>
+    <div class="state-table">
+      <h3>Current State Information</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Unit No.</th>
+            <th>State</th>
+            <th>Reason</th>
+            <th>Mode</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredStateData">
+            <td>{{item.unit_no}}</td>
+            <td>
+              <span [class]="'status-' + (item.state ? item.state.toLowerCase() : '')">
+                {{item.state==='Inop' ? 'In Operation' : item.state }}
+              </span>
+            </td>
+            <td>{{item.reason}}</td>
+            <td>{{item.mode ? item.mode.toUpperCase() : ''}}</td>
+            <td>
+              <span [class]="item.state === 'Inop'? 'disabled-delete':'' "
+                class="material-icons delete-icon"
+                (click)="item.state !== 'Inop' ? confirmDelete(item.unit_no) : ''">delete</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <app-alert-dialog
+  [isOpen]="showDeleteDialog"
+  title="Delete Firmware"
+  [description]="'Are you sure you want to delete the firmware for Unit No. ' + deletingMeterNo + '? This action cannot be undone.'"
+  (confirm)="handleDeleteConfirmed()"
+  (cancel)="handleDeleteCancelled()">
+  </app-alert-dialog>
+</div>

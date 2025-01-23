@@ -1,0 +1,70 @@
+<div class="modal" *ngIf="isOpen" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Import Firmware Version</h5>
+      </div>
+      <div class="modal-body">
+        <!-- Version Selection -->
+        <div class="version-selection-container">
+          <div class="radio-group">
+            <div class="radio-option1">
+              <input type="radio" id="newType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="true">
+              <label for="newType">Create New Version</label>
+            </div>
+            <div class="radio-option2">
+              <input type="radio" id="existingType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="false">
+              <label for="existingType">Using Existing Version</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Firmware Version Input -->
+        <div class="form-group">
+          <div class="input-row">
+            <label>Firmware Version</label>
+            <input *ngIf="isNewVersion" 
+                   [(ngModel)]="firmwareData.firmware_version" 
+                   (ngModelChange)="checkVersionUniqueness()"
+                   class="form-control" 
+                   placeholder="Enter new meter type">
+            <select *ngIf="!isNewVersion" [(ngModel)]="firmwareData.firmware_version" class="form-control form-dropdown">
+              <option value="">Select Version</option>
+              <option *ngFor="let version of existingVersions" [value]="version">
+                {{version}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>Start Date:</label>
+            <input type="date" [(ngModel)]="firmwareData.start_date" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-row">
+            <label>End Date:</label>
+            <input type="date" [(ngModel)]="firmwareData.end_date" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group form-group-last">
+          <div class="input-row">
+            <label>Version Status:</label>
+            <select [(ngModel)]="firmwareData.version_enabled" class="form-control form-dropdown">
+              <option [ngValue]="true">Enabled</option>
+              <option [ngValue]="false">Disabled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" (click)="close.emit()">Cancel</button>
+        <button class="btn-update" [disabled]="!isFormValid" (click)="onSave()">Import</button>
+      </div>
+    </div>
+  </div>
+</div>

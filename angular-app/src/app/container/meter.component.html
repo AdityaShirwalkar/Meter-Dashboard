@@ -1,0 +1,98 @@
+<app-login (usernameSelected)="onUserLogin($event)" *ngIf="!isLoggedIn"></app-login>
+<div *ngIf="isLoggedIn">
+  <div class="app-container">
+    <div class="container-fluid navbar">
+      <a class="navbar-brand" href="#">Device Management</a>
+
+      <!-- user icon -->
+      <div class="user-menu">
+        <div class="user-icon" (click)="toggleUserMenu()" #userIcon>
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="user-dropdown" *ngIf="isUserMenuOpen">
+          <div class="user-info" (click)="handleUsernameClick()" >
+            <i class="fas fa-user"></i>
+            <span [class.admin-username]="isAdmin">{{username}}</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <!-- For admin users -->
+          <ng-container *ngIf="isAdmin">
+            <div class="dropdown-item" (click)="openUserManagement()">
+              <i class="fas fa-users-cog"></i>
+              <span>User Management</span>
+            </div>
+          </ng-container>
+          <!-- For non-admin users -->
+          <ng-container *ngIf="!isAdmin">
+          </ng-container>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <div class="main-content">
+      <app-menu (menuItemSelected)="onMenuItemSelected($event)"></app-menu>
+
+      <router-outlet></router-outlet>
+
+      <div class="content-wrapper" *ngIf="currentView=='dashboard'">
+        <div class="action-bar">
+          <button class="btn-create" (click)="createNew()">Create new</button>
+        </div>
+
+        <app-meter-list
+          [data]="data"
+          [columns]="columns"
+          [selectedRow]="selectedRow"
+          (rowClick)="onRowClick($event)">
+        </app-meter-list>
+
+        <div class="button-container">
+          <button class="btn-action" (click)="openFirmwareModal(false)" [disabled]="!selectedRow">Firmware Details</button>
+          <button class="btn-action" (click)="openStateModal(false)" [disabled]="!selectedRow">State Details</button>
+          <button class="btn-action" (click)="openFirmwareModal(true)" [disabled]="!selectedRow">Activate Firmware</button>
+          <button class="btn-action" (click)="openStateModal(true)" [disabled]="!selectedRow">Update State</button>
+        </div>
+      </div>
+    </div>
+
+    <app-firmware-details *ngIf="currentView === 'firmware'"></app-firmware-details>
+    <app-state-details *ngIf="currentView === 'state'"></app-state-details>
+    <app-devices *ngIf="currentView=== 'devices'"></app-devices>
+
+    <app-firmware-modal
+      [isOpen]="isFirmwareModalOpen"
+      [isUpdating]="isUpdating"
+      [selectedRow]="selectedRow"
+      [firmwareData]="firmwareData"
+      [editedFirmwareData]="editedFirmwareData"
+      (close)="closeModal()"
+      (update)="updateFirmware()">
+    </app-firmware-modal>
+
+    <app-state-modal
+      [isOpen]="isStateModalOpen"
+      [isUpdating]="isUpdating"
+      [selectedRow]="selectedRow"
+      [stateData]="stateData"
+      [editedStateData]="editedStateData"
+      (close)="closeModal()"
+      (update)="updateState()">
+    </app-state-modal>
+
+    <app-new-meter-modal
+      [isOpen]="isNewMeterModalOpen"
+      [newMeterData]="newMeterData"
+      (close)="closeModal()"
+      (save)="saveNewMeter()">
+    </app-new-meter-modal>
+  </div>
+</div>
+
+<app-password-reset-modal></app-password-reset-modal>
+
+<app-user-management></app-user-management>
