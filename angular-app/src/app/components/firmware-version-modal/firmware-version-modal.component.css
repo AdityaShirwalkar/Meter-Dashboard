@@ -127,6 +127,15 @@
   margin-bottom: 1rem;
 }
 
+.error-message{
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+  margin-left: 189px;
+  padding-top: 0.25rem;
+}
+
 .radio-group {
   display: flex;
   gap: 1.6rem;

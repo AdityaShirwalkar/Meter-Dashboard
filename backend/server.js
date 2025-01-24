@@ -349,6 +349,39 @@ app.get('/api/data/firmware/:unitNo',(req, res) => {
   });
 });
 
+//add a firmware version
+app.post('/api/data/firmware_versions',(req,res) => {
+  const { firmware_version,start_date,end_date,version_enabled } = req.body;
+  const firmwareVersionQuery = 'INSERT INTO firmware_versions(firmware_version,start_date,end_date,version_enabled) VALUES(?,?,?,?)';
+
+  connection.beginTransaction((err) => {
+    if(err) {
+      console.error('Error beginning transaction:',err);
+      res.status(500).json({error:err.message});
+      return;
+    }
+
+    connection.query(firmwareVersionQuery,[firmware_version,start_date,end_date,version_enabled],(err,result) => 
+    {
+      if(err) {
+        return connection.rollback(()=> {
+          console.error('Error inserting the new version:', err);
+          res.status(500).json({error:err.message});
+        });
+      }
+      connection.commit((err) => {
+        if(err) {
+          return connection.rollback(() => {
+            console.error('Error committing transaction:',err);
+            res.status(500).json({error : err.message});
+          });
+        }
+        res.json({message: 'New version created successfully'});
+      });
+    });
+  });
+});
+
 //firmware version
 // app.get('/api/data/firmware-versions', (req, res) => {
 //   console.log('Accessing firmware versions endpoint');

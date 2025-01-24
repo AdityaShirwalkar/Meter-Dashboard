@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
-import { version } from 'os';
+import { response } from 'express';
 
 interface FirmwareVersionData {
   firmware_version: string;
@@ -74,9 +74,27 @@ export class FirmwareVersionModalComponent {
 
   onSave(): void {
     if (this.isFormValid) {
+      if(this.isNewVersion && !this.existingVersions.
+        includes(this.firmwareData.firmware_version)) {
+          this.existingVersions.push(this.firmwareData.firmware_version);
+      }
       this.save.emit(this.firmwareData);
+      this.saveNewVersion();
+      this.firmwareData.end_date='';
+      this.firmwareData.start_date='';
+      this.firmwareData.version_enabled=false;
+      this.firmwareData.firmware_version='';
     }
   }
+
+  saveNewVersion():void {
+    this.dataService.createNewVersion(this.firmwareData).subscribe({
+      next: (response) => {
+        console.log('New Version added successfully');
+      }
+    })
+  }
+
   onVersionModeChange(mode: 'new' | 'existing'): void {
     this.versionSelectionMode = mode;
     this.firmwareData.firmware_version = '';

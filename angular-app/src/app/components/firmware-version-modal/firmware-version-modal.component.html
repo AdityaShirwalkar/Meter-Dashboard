@@ -35,6 +35,7 @@
               </option>
             </select>
           </div>
+          <span *ngIf="!isUnique && firmwareData.firmware_version" class="error-message">Firmware Version must be unique</span>
         </div>
 
         <div class="form-group">
@@ -63,7 +64,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn-close" (click)="close.emit()">Cancel</button>
-        <button class="btn-update" [disabled]="!isFormValid" (click)="onSave()">Import</button>
+        <button class="btn-update" [disabled]="!isFormValid || !isUnique" (click)="onSave()">Import</button>
       </div>
     </div>
   </div>
