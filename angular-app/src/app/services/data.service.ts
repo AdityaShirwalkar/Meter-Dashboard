@@ -118,6 +118,15 @@ getData(tableName: string): Observable<any[]> {
     );
   }
 
+  updateExistingVersion(data: any): Observable<any> {
+  return this.http.patch<any>(`${this.apiUrl}/firmware_versions`, data).pipe(
+    catchError(error => {
+      console.error('Error in updating existing version: ', error);
+      throw error;
+    })
+  );
+}
+
   getStateData(unitNo: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/state/${unitNo}`).pipe(
       map(response => {

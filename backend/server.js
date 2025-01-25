@@ -382,6 +382,69 @@ app.post('/api/data/firmware_versions',(req,res) => {
   });
 });
 
+//Update the firmware version
+app.patch('/api/data/firmware_versions', (req, res) => {
+  console.log('Patch request body:', req.body);
+  
+  const { firmware_version, start_date, end_date, version_enabled } = req.body;
+  
+  // Validate required fields
+  if (!firmware_version) {
+    return res.status(400).json({ error: 'Firmware version is required' });
+  }
+
+  const updateFields = [];
+  const queryParams = [];
+  
+  if (start_date !== undefined) {
+    updateFields.push('start_date = ?');
+    queryParams.push(start_date);
+  }
+  
+  if (end_date !== undefined) {
+    updateFields.push('end_date = ?');
+    queryParams.push(end_date);
+  }
+  
+  if (version_enabled !== undefined) {
+    updateFields.push('version_enabled = ?');
+    queryParams.push(version_enabled);
+  }
+  
+  // Ensure we have fields to update
+  if (updateFields.length === 0) {
+    return res.status(400).json({ error: 'No fields to update' });
+  }
+  
+  // Add the version to the query parameters
+  queryParams.push(firmware_version);
+  
+  const query = `UPDATE firmware_versions SET ${updateFields.join(', ')} WHERE firmware_version = ?`;
+  
+  console.log('Update query:', query);
+  console.log('Query parameters:', queryParams);
+  
+  connection.query(query, queryParams, (err, result) => {
+    if (err) {
+      console.error('Database error details:', {
+        message: err.message,
+        code: err.code,
+        sqlMessage: err.sqlMessage,
+        sql: err.sql
+      });
+      res.status(500).json({ error: 'Database update failed', details: err.message });
+      return;
+    }
+    
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Firmware version not found' });
+      return;
+    }
+    
+    res.json({ message: 'Firmware version updated successfully', affectedRows: result.affectedRows });
+  });
+});
+
 //firmware version
 // app.get('/api/data/firmware-versions', (req, res) => {
 //   console.log('Accessing firmware versions endpoint');

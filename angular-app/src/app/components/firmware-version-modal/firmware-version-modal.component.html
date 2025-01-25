@@ -8,13 +8,17 @@
         <!-- Version Selection -->
         <div class="version-selection-container">
           <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" id="importType" name="meterTypeChoice" [value]="false">
+              <label for="importType">Import from file</label>
+            </div>
             <div class="radio-option1">
               <input type="radio" id="newType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="true">
               <label for="newType">Create New Version</label>
             </div>
             <div class="radio-option2">
               <input type="radio" id="existingType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="false">
-              <label for="existingType">Using Existing Version</label>
+              <label for="existingType">Update Existing Version</label>
             </div>
           </div>
         </div>
@@ -31,7 +35,7 @@
             <select *ngIf="!isNewVersion" [(ngModel)]="firmwareData.firmware_version" class="form-control form-dropdown">
               <option value="">Select Version</option>
               <option *ngFor="let version of existingVersions" [value]="version">
-                {{version}}
+                Ver. {{version}}
               </option>
             </select>
           </div>
@@ -64,7 +68,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn-close" (click)="close.emit()">Cancel</button>
-        <button class="btn-update" [disabled]="!isFormValid || !isUnique" (click)="onSave()">Import</button>
+        <button class="btn-update" [disabled]="!isFormValid || (!isNewVersion && !firmwareData.firmware_version)" (click)="onSave()">Import</button>
       </div>
     </div>
   </div>

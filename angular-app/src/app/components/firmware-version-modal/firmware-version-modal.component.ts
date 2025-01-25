@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { response } from 'express';
+import { error } from 'node:console';
 
 interface FirmwareVersionData {
   firmware_version: string;
-  start_date: string;
-  end_date: string;
-  version_enabled: boolean;
+  start_date?: string;
+  end_date?: string;
+  version_enabled?: boolean;
 }
 
 @Component({
@@ -65,6 +66,10 @@ export class FirmwareVersionModalComponent {
   }
 
   get isFormValid(): boolean {
+    if(!this.isNewVersion) {
+      return !!this.firmwareData.firmware_version;
+    }
+
     return !!(
       this.firmwareData.firmware_version &&
       this.firmwareData.start_date &&
@@ -73,18 +78,43 @@ export class FirmwareVersionModalComponent {
   }
 
   onSave(): void {
-    if (this.isFormValid) {
-      if(this.isNewVersion && !this.existingVersions.
-        includes(this.firmwareData.firmware_version)) {
-          this.existingVersions.push(this.firmwareData.firmware_version);
-      }
-      this.save.emit(this.firmwareData);
-      this.saveNewVersion();
-      this.firmwareData.end_date='';
-      this.firmwareData.start_date='';
-      this.firmwareData.version_enabled=false;
-      this.firmwareData.firmware_version='';
+    const saveData = { ...this.firmwareData };
+    
+    if (saveData.start_date === '') {
+      delete saveData.start_date;
     }
+    
+    if (saveData.end_date === '') {
+      delete saveData.end_date;
+    }
+  
+    if (!this.isNewVersion) {
+      this.save.emit(saveData);
+      this.saveExistingVersion(saveData);
+    } else {
+      if (this.isFormValid && !this.existingVersions.includes(saveData.firmware_version)) {
+        this.existingVersions.push(saveData.firmware_version);
+        this.save.emit(saveData);
+        this.saveNewVersion();
+      }
+    }
+  
+    // Reset form
+    this.firmwareData.end_date = '';
+    this.firmwareData.start_date = '';
+    this.firmwareData.version_enabled = false;
+    this.firmwareData.firmware_version = '';
+  }
+  
+  saveExistingVersion(data: FirmwareVersionData): void {
+    this.dataService.updateExistingVersion(data).subscribe({
+      next: (response) => {
+        console.log('Existing Version updated successfully');
+      },
+      error: (error) => {
+        console.error('Error updating existing version:', error);
+      }
+    });
   }
 
   saveNewVersion():void {
