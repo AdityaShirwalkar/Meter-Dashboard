@@ -5,9 +5,7 @@
         <h5 class="modal-title">Import Firmware Version</h5>
       </div>
       <div class="modal-body">
-        <!-- Version Selection -->
         <div class="version-selection-container">
-          <!-- Update the radio group in the template -->
           <div class="radio-group">
             <div class="radio-option">
               <input
@@ -45,7 +43,6 @@
           </div>
         </div>
 
-        <!-- File Import Section -->
         <div *ngIf="versionSelectionMode === 'import'" class="form-group">
           <div class="input-row">
             <label>Select File</label>
@@ -55,6 +52,19 @@
               accept=".json,.csv"
               class="form-control"
             />
+          </div>
+          <div *ngIf="generalError" class="error-message mt-2">
+            {{ generalError }}
+          </div>
+        
+          <div *ngIf="validationErrors.length > 0" class="validation-errors mt-2">
+            <div class="error-title">Please fix the following issues:</div>
+            <ul>
+              <li *ngFor="let error of validationErrors" class="error-item">
+                <span *ngIf="error.row">Row {{ error.row }}: </span>
+                <span>{{ error.field }}: {{ error.message }}</span>
+              </li>
+            </ul>
           </div>
           <div
             *ngIf="importedFileData.length > 0"
@@ -134,7 +144,7 @@
         </ng-container>
       </div>
       <div class="modal-footer">
-        <button class="btn-close" (click)="close.emit()">Cancel</button>
+        <button class="btn-close" (click)="closeModal();close.emit()">Cancel</button>
         <button
           class="btn-update"
           [disabled]="

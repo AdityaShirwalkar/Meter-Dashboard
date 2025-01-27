@@ -10,6 +10,12 @@ interface FirmwareVersionData {
   version_enabled?: boolean;
 }
 
+interface ValidationError {
+  row?:number;
+  field: string;
+  message: string;
+}
+
 @Component({
   selector: 'app-firmware-version-modal',
   standalone: true,
@@ -34,29 +40,29 @@ export class FirmwareVersionModalComponent {
   isNewVersion: boolean = true;
   isUnique: boolean = true;
   importedFileData: any[] = [];
+  validationErrors: ValidationError[] = [];
+  generalError: string = '';
 
   constructor(private dataService: DataService) {
     this.loadExistingVersions();
   }
 
   resetForm(): void {
-    // Reset all form fields
     this.firmwareData = {
       firmware_version: '',
       start_date: '',
       end_date: '',
       version_enabled: false
     };
-    // Reset error states
     this.isUnique = true;
-    // Reset imported file data
     this.importedFileData = [];
   }
 
   onVersionModeChange(): void {
     this.resetForm();
-    // Set isNewVersion based on the selection mode
     this.isNewVersion = this.versionSelectionMode === 'new';
+    this.generalError='';
+    this.validationErrors=[];
   }
 
   loadExistingVersions(): void {
@@ -85,6 +91,9 @@ export class FirmwareVersionModalComponent {
   }
 
   onFileSelected(event: any): void {
+    this.generalError='';
+    this.validationErrors=[];
+
     const file = event.target.files[0];
     if(file) {
       const fileReader = new FileReader();
@@ -96,11 +105,21 @@ export class FirmwareVersionModalComponent {
     }
   }
 
+  displayError(message: string): void {
+    this.generalError = message;
+    this.validationErrors = [];
+  }
+  
+  displayValidationErrors(errors: ValidationError[]): void {
+    this.validationErrors = errors;
+    this.generalError = '';
+  }
+
   processImportedFile(content: string, fileName: string): void {
     try {
       const fileExtension = fileName.split('.').pop()?.toLowerCase();
       let parsedData: FirmwareVersionData[];
-
+  
       switch (fileExtension) {
         case 'json':
           parsedData = JSON.parse(content) as FirmwareVersionData[];
@@ -111,24 +130,91 @@ export class FirmwareVersionModalComponent {
         default:
           throw new Error('Unsupported file type');
       }
-
-      this.validateImportedData(parsedData);
-      this.importedFileData = parsedData;
+  
+      const validationErrors = this.validateImportedData(parsedData);
+  
+      if (validationErrors.length > 0) {
+        this.displayValidationErrors(validationErrors);
+        this.importedFileData = [];
+      } else {
+        this.importedFileData = parsedData;
+      }
     } catch (error) {
       console.error('Error processing imported file:', error);
+      this.displayError('Failed to process file. Please check the file format.');
     }
   }
 
-  validateImportedData(data: FirmwareVersionData[]): void {
+  validateImportedData(data: FirmwareVersionData[]): ValidationError[] {
+    const errors: ValidationError[] = [];
+  
     if (!data || !Array.isArray(data)) {
-      throw new Error('Invalid file format');
+      errors.push({
+        field: 'file',
+        message: 'Invalid file format - must be an array of firmware versions'
+      });
+      return errors;
     }
-
-    data.forEach(item => {
+  
+    data.forEach((item, index) => {
       if (!item.firmware_version) {
-        throw new Error('Missing firmware version');
+        errors.push({
+          row: index + 1,
+          field: 'firmware_version',
+          message: 'Firmware version is required'
+        });
+      }
+  
+      if (item.firmware_version && !/^\d+\.\d+$/.test(item.firmware_version)) {
+        errors.push({
+          row: index + 1,
+          field: 'firmware_version',
+          message: 'Invalid version format. Expected format: X.Y.Z (e.g., 1.0.0)'
+        });
+      }
+  
+      if (item.start_date && !this.isValidDate(item.start_date)) {
+        errors.push({
+          row: index + 1,
+          field: 'start_date',
+          message: 'Invalid start date format. Expected YYYY-MM-DD'
+        });
+      }
+  
+      if (item.end_date && !this.isValidDate(item.end_date)) {
+        errors.push({
+          row: index + 1,
+          field: 'end_date',
+          message: 'Invalid end date format. Expected YYYY-MM-DD'
+        });
+      }
+  
+      if (item.start_date && item.end_date && 
+          new Date(item.start_date) > new Date(item.end_date)) {
+        errors.push({
+          row: index + 1,
+          field: 'dates',
+          message: 'End date must be after start date'
+        });
+      }
+  
+      if (item.version_enabled !== undefined && 
+          typeof item.version_enabled !== 'boolean') {
+        errors.push({
+          row: index + 1,
+          field: 'version_enabled',
+          message: 'Version enabled must be true or false'
+        });
       }
     });
+  
+    return errors;
+  }
+
+  isValidDate(dateString: string): boolean {
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date.getTime()) && 
+           /^\d{4}-\d{2}-\d{2}$/.test(dateString);
   }
 
   parseCSV(csvContent: string): FirmwareVersionData[] {
@@ -179,7 +265,6 @@ export class FirmwareVersionModalComponent {
 
   onSave(): void {
     if (this.versionSelectionMode === 'import' && this.importedFileData.length > 0) {
-      // Save imported data
       this.importedFileData.forEach(data => {
         this.dataService.createNewVersion(data).subscribe({
           next: (response) => {
@@ -239,5 +324,14 @@ export class FirmwareVersionModalComponent {
         console.error('Error creating new version:', error);
       }
     });
+  }
+
+  closeModal() {
+    this.firmwareData.firmware_version='';
+    this.firmwareData.start_date='';
+    this.firmwareData.end_date='';
+    this.firmwareData.version_enabled=false;
+    this.generalError='';
+    this.validationErrors=[];
   }
 }
