@@ -109,6 +109,15 @@ getData(tableName: string): Observable<any[]> {
     );
   }
 
+  getFirmwareVersion():Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/firmware_versions`).pipe(
+      catchError(error => {
+        console.error('Error fetching version for firmware updation:',error);
+        throw error;
+      })
+    );
+  }
+
   createNewVersion(data:any): Observable<any>{
     return this.http.post<any>(`${this.apiUrl}/firmware_versions `,data).pipe(
       catchError(error => {

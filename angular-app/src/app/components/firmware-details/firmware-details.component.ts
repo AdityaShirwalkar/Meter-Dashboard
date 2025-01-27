@@ -43,7 +43,7 @@ export class FirmwareDetailsComponent implements OnInit {
       next: (data: FirmwareData[]) => {
         this.firmwareData = data.map(item => ({
           ...item,
-          available_version: item.Firmware_version ? '4.2' : null,
+          available_version: item.Firmware_version ? '5.2' : null,
           isVisible: item.Firmware_version !== null
         }));
         this.calculateStats(this.firmwareData);
@@ -59,7 +59,7 @@ export class FirmwareDetailsComponent implements OnInit {
     const visibleData = data.filter(item => item.isVisible);
     this.totalDevices = visibleData.length;
     this.pendingUpdates = visibleData.filter(item => 
-      item.Firmware_version && item.Firmware_version !== '4.2'
+      item.Firmware_version && item.Firmware_version !== '5.2'
     ).length;
     this.availableFirmware = visibleData.filter(item => 
       item.firmware_availability
@@ -76,7 +76,7 @@ export class FirmwareDetailsComponent implements OnInit {
         break;
       case 'pending':
         this.filteredFirmwareData = visibleData.filter(
-          item => item.Firmware_version && item.Firmware_version !== '4.2'
+          item => item.Firmware_version && item.Firmware_version !== '5.2'
         );
         break;
       case 'available':

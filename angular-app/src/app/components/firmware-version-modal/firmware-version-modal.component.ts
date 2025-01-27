@@ -2,8 +2,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
-import { response } from 'express';
-import { error } from 'node:console';
 
 interface FirmwareVersionData {
   firmware_version: string;
@@ -31,13 +29,34 @@ export class FirmwareVersionModalComponent {
     version_enabled: false
   };
 
-  versionSelectionMode: 'new' | 'existing' = 'new';
+  versionSelectionMode: 'new' | 'existing' | 'import' = 'new';
   existingVersions: string[] = [];
   isNewVersion: boolean = true;
   isUnique: boolean = true;
+  importedFileData: any[] = [];
 
   constructor(private dataService: DataService) {
     this.loadExistingVersions();
+  }
+
+  resetForm(): void {
+    // Reset all form fields
+    this.firmwareData = {
+      firmware_version: '',
+      start_date: '',
+      end_date: '',
+      version_enabled: false
+    };
+    // Reset error states
+    this.isUnique = true;
+    // Reset imported file data
+    this.importedFileData = [];
+  }
+
+  onVersionModeChange(): void {
+    this.resetForm();
+    // Set isNewVersion based on the selection mode
+    this.isNewVersion = this.versionSelectionMode === 'new';
   }
 
   loadExistingVersions(): void {
@@ -65,8 +84,89 @@ export class FirmwareVersionModalComponent {
     }
   }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if(file) {
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const fileContent = e.target?.result as string;
+        this.processImportedFile(fileContent, file.name);
+      };
+      fileReader.readAsText(file);
+    }
+  }
+
+  processImportedFile(content: string, fileName: string): void {
+    try {
+      const fileExtension = fileName.split('.').pop()?.toLowerCase();
+      let parsedData: FirmwareVersionData[];
+
+      switch (fileExtension) {
+        case 'json':
+          parsedData = JSON.parse(content) as FirmwareVersionData[];
+          break;
+        case 'csv':
+          parsedData = this.parseCSV(content);
+          break;
+        default:
+          throw new Error('Unsupported file type');
+      }
+
+      this.validateImportedData(parsedData);
+      this.importedFileData = parsedData;
+    } catch (error) {
+      console.error('Error processing imported file:', error);
+    }
+  }
+
+  validateImportedData(data: FirmwareVersionData[]): void {
+    if (!data || !Array.isArray(data)) {
+      throw new Error('Invalid file format');
+    }
+
+    data.forEach(item => {
+      if (!item.firmware_version) {
+        throw new Error('Missing firmware version');
+      }
+    });
+  }
+
+  parseCSV(csvContent: string): FirmwareVersionData[] {
+    const lines = csvContent.split('\n');
+    const headers = lines[0].split(',').map(header => header.trim());
+    
+    return lines.slice(1).map(line => {
+      const values = line.split(',').map(value => value.trim());
+      const dataObject: FirmwareVersionData = {
+        firmware_version: '',
+        start_date: '',
+        end_date: '',
+        version_enabled: false
+      };
+
+      headers.forEach((header, index) => {
+        switch(header.toLowerCase()) {
+          case 'firmware_version':
+            dataObject.firmware_version = values[index];
+            break;
+          case 'start_date':
+            dataObject.start_date = values[index];
+            break;
+          case 'end_date':
+            dataObject.end_date = values[index];
+            break;
+          case 'version_enabled':
+            dataObject.version_enabled = values[index].toLowerCase() === 'true';
+            break;
+        }
+      });
+
+      return dataObject;
+    });
+  }
+
   get isFormValid(): boolean {
-    if(!this.isNewVersion) {
+    if (!this.isNewVersion) {
       return !!this.firmwareData.firmware_version;
     }
 
@@ -78,6 +178,22 @@ export class FirmwareVersionModalComponent {
   }
 
   onSave(): void {
+    if (this.versionSelectionMode === 'import' && this.importedFileData.length > 0) {
+      // Save imported data
+      this.importedFileData.forEach(data => {
+        this.dataService.createNewVersion(data).subscribe({
+          next: (response) => {
+            console.log('Imported version added successfully');
+          },
+          error: (error) => {
+            console.error('Error importing version:', error);
+          }
+        });
+      });
+      this.close.emit();
+      return;
+    }
+
     const saveData = { ...this.firmwareData };
     
     if (saveData.start_date === '') {
@@ -87,25 +203,22 @@ export class FirmwareVersionModalComponent {
     if (saveData.end_date === '') {
       delete saveData.end_date;
     }
-  
-    if (!this.isNewVersion) {
+
+    if (this.versionSelectionMode === 'existing') {
       this.save.emit(saveData);
       this.saveExistingVersion(saveData);
-    } else {
+    } else if (this.versionSelectionMode === 'new') {
       if (this.isFormValid && !this.existingVersions.includes(saveData.firmware_version)) {
         this.existingVersions.push(saveData.firmware_version);
         this.save.emit(saveData);
         this.saveNewVersion();
       }
     }
-  
-    // Reset form
-    this.firmwareData.end_date = '';
-    this.firmwareData.start_date = '';
-    this.firmwareData.version_enabled = false;
-    this.firmwareData.firmware_version = '';
+
+    this.close.emit();
+    this.resetForm();
   }
-  
+
   saveExistingVersion(data: FirmwareVersionData): void {
     this.dataService.updateExistingVersion(data).subscribe({
       next: (response) => {
@@ -117,16 +230,14 @@ export class FirmwareVersionModalComponent {
     });
   }
 
-  saveNewVersion():void {
+  saveNewVersion(): void {
     this.dataService.createNewVersion(this.firmwareData).subscribe({
       next: (response) => {
         console.log('New Version added successfully');
+      },
+      error: (error) => {
+        console.error('Error creating new version:', error);
       }
-    })
-  }
-
-  onVersionModeChange(mode: 'new' | 'existing'): void {
-    this.versionSelectionMode = mode;
-    this.firmwareData.firmware_version = '';
+    });
   }
 }

@@ -242,27 +242,26 @@ handleUsernameClick() {
     }
   }
 
-  updateFirmware(): void { //1
+  updateFirmware(): void {
     const dataToSave = {
       ...this.editedFirmwareData,
       MeterNo: this.selectedRow.UnitNo,
       firmware_availability: this.editedFirmwareData.firmware_availability === 'available',
-      activation_date: new Date(this.editedFirmwareData.activation_date).toISOString(),
+      activation_date: new Date(this.editedFirmwareData.activation_date).toISOString().split('T')[0],
       isVisible: true
     };
   
-    console.log('Sending firmware update:', dataToSave);
-  
     this.dataService.updateFirmwareData(dataToSave).subscribe({
       next: (response) => {
-        console.log('Firmware data updated successfully', response);
         this.firmwareData = { ...this.firmwareData, ...dataToSave };
         this.isUpdating = false;
         this.closeModal();
         this.fetchData(this.currentTable);
       },
       error: (error) => {
-        console.error('Error updating firmware data:', error);
+        console.error('Full error details:', error);
+        console.error('Error response:', error.error);
+        alert(error.error.error || 'Failed to update firmware');
       }
     });
   }

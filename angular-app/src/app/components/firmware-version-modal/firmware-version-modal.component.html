@@ -7,68 +7,147 @@
       <div class="modal-body">
         <!-- Version Selection -->
         <div class="version-selection-container">
+          <!-- Update the radio group in the template -->
           <div class="radio-group">
             <div class="radio-option">
-              <input type="radio" id="importType" name="meterTypeChoice" [value]="false">
+              <input
+                type="radio"
+                id="importType"
+                name="meterTypeChoice"
+                [(ngModel)]="versionSelectionMode"
+                [value]="'import'"
+                (ngModelChange)="onVersionModeChange()"
+              />
               <label for="importType">Import from file</label>
             </div>
             <div class="radio-option1">
-              <input type="radio" id="newType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="true">
+              <input
+                type="radio"
+                id="newType"
+                name="meterTypeChoice"
+                [(ngModel)]="versionSelectionMode"
+                [value]="'new'"
+                (ngModelChange)="onVersionModeChange()"
+              />
               <label for="newType">Create New Version</label>
             </div>
             <div class="radio-option2">
-              <input type="radio" id="existingType" name="meterTypeChoice" [(ngModel)]="isNewVersion" [value]="false">
+              <input
+                type="radio"
+                id="existingType"
+                name="meterTypeChoice"
+                [(ngModel)]="versionSelectionMode"
+                [value]="'existing'"
+                (ngModelChange)="onVersionModeChange()"
+              />
               <label for="existingType">Update Existing Version</label>
             </div>
           </div>
         </div>
 
-        <!-- Firmware Version Input -->
-        <div class="form-group">
+        <!-- File Import Section -->
+        <div *ngIf="versionSelectionMode === 'import'" class="form-group">
           <div class="input-row">
-            <label>Firmware Version</label>
-            <input *ngIf="isNewVersion" 
-                   [(ngModel)]="firmwareData.firmware_version" 
-                   (ngModelChange)="checkVersionUniqueness()"
-                   class="form-control" 
-                   placeholder="Enter new meter type">
-            <select *ngIf="!isNewVersion" [(ngModel)]="firmwareData.firmware_version" class="form-control form-dropdown">
-              <option value="">Select Version</option>
-              <option *ngFor="let version of existingVersions" [value]="version">
-                Ver. {{version}}
-              </option>
-            </select>
+            <label>Select File</label>
+            <input
+              type="file"
+              (change)="onFileSelected($event)"
+              accept=".json,.csv"
+              class="form-control"
+            />
           </div>
-          <span *ngIf="!isUnique && firmwareData.firmware_version" class="error-message">Firmware Version must be unique</span>
-        </div>
-
-        <div class="form-group">
-          <div class="input-row">
-            <label>Start Date:</label>
-            <input type="date" [(ngModel)]="firmwareData.start_date" class="form-control">
+          <div
+            *ngIf="importedFileData.length > 0"
+            class="imported-data-preview"
+          >
+            <p>Imported {{ importedFileData.length }} firmware versions</p>
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="input-row">
-            <label>End Date:</label>
-            <input type="date" [(ngModel)]="firmwareData.end_date" class="form-control">
+        <ng-container *ngIf="versionSelectionMode !== 'import'">
+          <div class="form-group">
+            <div class="input-row">
+              <label>Firmware Version</label>
+              <input
+                *ngIf="versionSelectionMode === 'new'"
+                [(ngModel)]="firmwareData.firmware_version"
+                (ngModelChange)="checkVersionUniqueness()"
+                class="form-control"
+                placeholder="Enter new meter type"
+              />
+              <select
+                *ngIf="versionSelectionMode === 'existing'"
+                [(ngModel)]="firmwareData.firmware_version"
+                class="form-control form-dropdown"
+              >
+                <option value="">Select Version</option>
+                <option
+                  *ngFor="let version of existingVersions"
+                  [value]="version"
+                >
+                  Ver. {{ version }}
+                </option>
+              </select>
+            </div>
+            <span
+              *ngIf="!isUnique && firmwareData.firmware_version"
+              class="error-message"
+            >
+              Firmware Version must be unique
+            </span>
           </div>
-        </div>
 
-        <div class="form-group form-group-last">
-          <div class="input-row">
-            <label>Version Status:</label>
-            <select [(ngModel)]="firmwareData.version_enabled" class="form-control form-dropdown">
-              <option [ngValue]="true">Enabled</option>
-              <option [ngValue]="false">Disabled</option>
-            </select>
+          <div class="form-group">
+            <div class="input-row">
+              <label>Start Date:</label>
+              <input
+                type="date"
+                [(ngModel)]="firmwareData.start_date"
+                class="form-control"
+              />
+            </div>
           </div>
-        </div>
+
+          <div class="form-group">
+            <div class="input-row">
+              <label>End Date:</label>
+              <input
+                type="date"
+                [(ngModel)]="firmwareData.end_date"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="form-group form-group-last">
+            <div class="input-row">
+              <label>Version Status:</label>
+              <select
+                [(ngModel)]="firmwareData.version_enabled"
+                class="form-control form-dropdown"
+              >
+                <option [ngValue]="true">Enabled</option>
+                <option [ngValue]="false">Disabled</option>
+              </select>
+            </div>
+          </div>
+        </ng-container>
       </div>
       <div class="modal-footer">
         <button class="btn-close" (click)="close.emit()">Cancel</button>
-        <button class="btn-update" [disabled]="!isFormValid || (!isNewVersion && !firmwareData.firmware_version)" (click)="onSave()">Import</button>
+        <button
+          class="btn-update"
+          [disabled]="
+            (versionSelectionMode === 'import' &&
+              importedFileData.length === 0) ||
+            (versionSelectionMode !== 'import' &&
+              (!isFormValid ||
+                (!isNewVersion && !firmwareData.firmware_version)))
+          "
+          (click)="onSave()"
+        >
+          Import
+        </button>
       </div>
     </div>
   </div>

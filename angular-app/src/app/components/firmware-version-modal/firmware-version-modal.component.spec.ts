@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FirwareVersionModalComponent } from './firmware-version-modal.component';
+import { FirmwareVersionModalComponent } from './firmware-version-modal.component';
 
 describe('FirwareVersionModalComponent', () => {
-  let component: FirwareVersionModalComponent;
-  let fixture: ComponentFixture<FirwareVersionModalComponent>;
+  let component: FirmwareVersionModalComponent;
+  let fixture: ComponentFixture<FirmwareVersionModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FirwareVersionModalComponent]
+      imports: [FirmwareVersionModalComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FirwareVersionModalComponent);
+    fixture = TestBed.createComponent(FirmwareVersionModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

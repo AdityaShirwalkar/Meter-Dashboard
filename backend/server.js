@@ -298,6 +298,84 @@ app.get('/api/data/firmware_version', (req, res) => {
   });
 });
 
+app.get('/api/data/firmware_versions', (req, res) => {
+  const query = 'SELECT firmware_version, start_date, end_date FROM firmware_versions WHERE version_enabled = true';
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.put('/api/data/firmware/:unitNo', (req, res) => {
+  const { unitNo } = req.params;
+  const { Firmware_version, activation_date, firmware_availability } = req.body;
+  
+  console.log('Received update request:', { unitNo, Firmware_version, activation_date, firmware_availability });
+
+  if (Firmware_version === null) {
+    const updateQuery = 'UPDATE firmware SET Firmware_version = ?, activation_date = ?, firmware_availability = ? WHERE MeterNo = ?';
+    
+    connection.query(updateQuery, [Firmware_version, activation_date, firmware_availability, unitNo], (err, result) => {
+      if (err) {
+        console.error('Update query error:', err);
+        return res.status(500).json({ error: 'Database error in update' });
+      }
+      
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Firmware data not found' });
+      }
+      
+      res.json({ message: 'Firmware data updated successfully' });
+    });
+    return;
+  }
+
+  if (!Firmware_version || !activation_date) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  const versionQuery = 'SELECT start_date, end_date FROM firmware_versions WHERE firmware_version = ? AND version_enabled = true';
+  
+  connection.query(versionQuery, [Firmware_version], (versionErr, versionResults) => {
+    if (versionErr) {
+      console.error('Version query error:', versionErr);
+      return res.status(500).json({ error: 'Database error in version validation' });
+    }
+    
+    if (versionResults.length === 0) {
+      return res.status(400).json({ error: 'Invalid or disabled firmware version' });
+    }
+    
+    const { start_date, end_date } = versionResults[0];
+    const activationDate = new Date(activation_date);
+    
+    if (activationDate < new Date(start_date) || activationDate > new Date(end_date)) {
+      return res.status(400).json({ 
+        error: `Activation date must be between ${start_date} and ${end_date}` 
+      });
+    }
+    
+    const updateQuery = 'UPDATE firmware SET Firmware_version = ?, activation_date = ?, firmware_availability = ? WHERE MeterNo = ?';
+    
+    connection.query(updateQuery, [Firmware_version, activation_date, firmware_availability, unitNo], (err, result) => {
+      if (err) {
+        console.error('Update query error:', err);
+        return res.status(500).json({ error: 'Database error in update' });
+      }
+      
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Firmware data not found' });
+      }
+      
+      res.json({ message: 'Firmware data updated successfully' });
+    });
+  });
+});
+
 app.get('/api/data/:tableName', (req, res) => {
   const { tableName } = req.params;
   const query = `SELECT * FROM ${tableName}`;
@@ -488,33 +566,6 @@ app.get('/api/data/state', (req, res) => {
   });
 });
 
-app.put('/api/data/firmware/:unitNo', (req, res) => {
-  const { unitNo } = req.params;
-  const { Firmware_version, activation_date, firmware_availability } = req.body;
-  
-  let formattedDate = null;
-  if (activation_date) {
-    formattedDate = new Date(activation_date).toISOString().slice(0, 10);
-  }
-  
-  const query = 'UPDATE firmware SET Firmware_version = ?, activation_date = ?, firmware_availability = ? WHERE MeterNo = ?';
-  
-  console.log('Received firmware update request:', { unitNo, Firmware_version, activation_date: formattedDate, firmware_availability });
-
-  connection.query(query, [Firmware_version, formattedDate, firmware_availability, unitNo], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: 'Firmware data not found' });
-      return;
-    }
-    res.json({ message: 'Firmware data updated successfully' });
-  });
-});
-
 // state details
 app.get('/api/data/state/:unitNo', (req, res) => {
   const { unitNo } = req.params;
@@ -535,7 +586,6 @@ app.get('/api/data/state/:unitNo', (req, res) => {
   });
 });
 
-// In server.js, update the state PUT endpoint to handle null values
 app.put('/api/data/state/:unitNo', (req, res) => {
   const { unitNo } = req.params;
   const { state, reason, mode } = req.body;
