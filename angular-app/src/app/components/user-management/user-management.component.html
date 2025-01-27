@@ -3,7 +3,6 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>User Management</h2>
-      <button class="close-button" (click)="close()">×</button>
     </div>
     <div class="modal-body">
       <table class="users-table">
@@ -40,6 +39,11 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="modal-footer">
+      <button
+      class="btn-close"
+      (click)="close()">Cancel</button>
     </div>
   </div>
 </div>

@@ -225,7 +225,8 @@ app-meter-list {
 
 .btn-create:not(:disabled),
 .btn-action:not(:disabled) {
-  background-color: #2ecc71;
+  /* background-color: #2ecc71; */
+  background-color: #33b249;
   background-image: linear-gradient(
     to bottom right,
     rgba(255, 255, 255, 0.1),
@@ -234,13 +235,15 @@ app-meter-list {
 }
 
 .btn-create:not(:disabled) {
-  background-color: #2ecc71;
+  /* background-color: #2ecc71; */
+  background-color: #33b249;
   opacity: 0.95;
 }
 
 .btn-create:not(:disabled):hover,
 .btn-action:not(:disabled):hover {
-  background-color: #27ae60;
+  /* background-color: #27ae60; */
+  background-color: #2fa042;
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 6px 12px rgba(46, 204, 113, 0.25),
               0 2px 4px rgba(0, 0, 0, 0.12);

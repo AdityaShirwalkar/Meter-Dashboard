@@ -96,12 +96,12 @@
   }
   
   .btn-close {
-    background-color: #95a5a6;
+    background-color: rgba(255, 86, 86, 0.596);
     margin-right: auto;
   }
   
   .btn-close:hover {
-    background-color: rgb(233, 127, 127);
+    background-color: #dd3439;
   }
   
   .btn-update {

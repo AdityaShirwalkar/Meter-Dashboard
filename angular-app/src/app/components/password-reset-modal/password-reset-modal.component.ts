@@ -13,7 +13,6 @@ import { AuthService } from '@app/services/auth.service';
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h2>Reset Password</h2>
-          <button class="close-button" (click)="close()">×</button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -55,6 +54,9 @@ import { AuthService } from '@app/services/auth.service';
         </div>
         <div class="modal-footer">
           <button
+          class="btn-close"
+          (click)="close()">Cancel</button>
+          <button
             class="submit-button"
             (click)="resetPassword()"
             [disabled]="isLoading"
@@ -89,6 +91,7 @@ import { AuthService } from '@app/services/auth.service';
         transform: translate(-50%, -50%);
         z-index: 1001;
         width: 100%;
+        overflow: hidden;
         max-width: 460px;
         background: white;
         border-radius: 10px;
@@ -192,7 +195,10 @@ import { AuthService } from '@app/services/auth.service';
 
       .modal-footer {
         padding: 1.2rem;
-        text-align: right;
+        // text-align: right;
+        display: flex;
+        align-items:center;
+        justify-content: space-between;
         /* border-top: 1px solid #eee; */
       }
 
@@ -216,6 +222,24 @@ import { AuthService } from '@app/services/auth.service';
         background-color: #a8a8a8;
         cursor: not-allowed;
       }
+
+      .btn-close {
+        background-color: #fc9c9f;
+        margin-right: auto;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+  
+    .btn-close:hover {
+      background-color: #dd3439;
+    }
     `,
   ],
 })
