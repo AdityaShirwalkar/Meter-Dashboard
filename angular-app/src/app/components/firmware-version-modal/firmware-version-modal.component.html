@@ -58,7 +58,7 @@
           </div>
         
           <div *ngIf="validationErrors.length > 0" class="validation-errors mt-2">
-            <div class="error-title">Please fix the following issues:</div>
+            <div class="error-title">Issues found in some firmware versions:</div>
             <ul>
               <li *ngFor="let error of validationErrors" class="error-item">
                 <span *ngIf="error.row">Row {{ error.row }}: </span>
@@ -66,11 +66,10 @@
               </li>
             </ul>
           </div>
-          <div
-            *ngIf="importedFileData.length > 0"
-            class="imported-data-preview"
-          >
-            <p>Imported {{ importedFileData.length }} firmware versions</p>
+          
+          <div *ngIf="importedFileData.length > 0" class="imported-data-preview">
+            <p> Found {{importedFileData.length}} firmware versions
+            </p>
           </div>
         </div>
 

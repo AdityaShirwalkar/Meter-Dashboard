@@ -8,6 +8,7 @@ interface FirmwareVersionData {
   start_date?: string;
   end_date?: string;
   version_enabled?: boolean;
+  isValid?: boolean; //only import
 }
 
 interface ValidationError {
@@ -24,7 +25,16 @@ interface ValidationError {
   styleUrls: ['./firmware-version-modal.component.css']
 })
 export class FirmwareVersionModalComponent {
-  @Input() isOpen = false;
+  @Input() set isOpen(value: boolean) {
+    if (value) {
+      this.resetModal();
+    }
+    this._isOpen = value;
+  }
+  get isOpen(): boolean {
+    return this._isOpen;
+  }
+  private _isOpen = false;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<FirmwareVersionData>();
 
@@ -55,12 +65,32 @@ export class FirmwareVersionModalComponent {
       end_date: '',
       version_enabled: true
     };
-    this.isUnique = true;
+    this.clearFileInput();
+    this.generalError='';
+    this.importedFileData=[];
+  }
+
+  resetModal(): void {
+    this.resetForm();
+    this.clearFileInput();
+    this.generalError = '';
+    this.validationErrors = [];
     this.importedFileData = [];
+    this.versionSelectionMode = 'new';
+    this.isNewVersion = true;
+    this.isUnique = true;
+  }
+
+  clearFileInput(): void {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   onVersionModeChange(): void {
     this.resetForm();
+    // this.resetModal();  
     this.isNewVersion = this.versionSelectionMode === 'new';
     this.generalError='';
     this.validationErrors=[];
@@ -134,12 +164,11 @@ export class FirmwareVersionModalComponent {
   
       const validationErrors = this.validateImportedData(parsedData);
   
-      if (validationErrors.length > 0) {
+      if(validationErrors.length>0) {
         this.displayValidationErrors(validationErrors);
-        this.importedFileData = [];
-      } else {
-        this.importedFileData = parsedData;
       }
+
+      this.importedFileData = parsedData;
     } catch (error) {
       console.error('Error processing imported file:', error);
       this.displayError('Failed to process file. Please check the file format.');
@@ -158,63 +187,75 @@ export class FirmwareVersionModalComponent {
     }
   
     data.forEach((item, index) => {
+      const itemErrors: ValidationError[] = [];
+      item.isValid = true;
+
       if (!item.firmware_version) {
-        errors.push({
+        itemErrors.push({
           row: index + 1,
           field: 'firmware_version',
           message: 'Firmware version is required'
         });
+        item.isValid=false;
       }
   
       if (item.firmware_version && !/^\d+\.\d+$/.test(item.firmware_version)) {
-        errors.push({
+        itemErrors.push({
           row: index + 1,
           field: 'firmware_version',
           message: 'Invalid version format. Expected format: X.Y.Z (e.g., 1.0.0)'
         });
+        item.isValid = false;
       }
 
       if(item.firmware_version && this.existingVersions.includes(item.firmware_version)) {
-        errors.push({
+        itemErrors.push({
           row:index+1,
           field:'firmware_version',
           message:'Firmware version is not unique.'
-        })
+        });
+        item.isValid = false;
       }
   
       if (item.start_date && !this.isValidDate(item.start_date)) {
-        errors.push({
+        itemErrors.push({
           row: index + 1,
           field: 'start_date',
           message: 'Invalid start date format. Expected YYYY-MM-DD'
         });
+        item.isValid = false;
       }
   
       if (item.end_date && !this.isValidDate(item.end_date)) {
-        errors.push({
+        itemErrors.push({
           row: index + 1,
           field: 'end_date',
           message: 'Invalid end date format. Expected YYYY-MM-DD'
         });
+        item.isValid = false;
       }
   
       if (item.start_date && item.end_date && 
           new Date(item.start_date) > new Date(item.end_date)) {
-        errors.push({
-          row: index + 1,
-          field: 'dates',
-          message: 'End date must be after start date'
+          itemErrors.push({
+            row: index + 1,
+            field: 'dates',
+            message: 'End date must be after start date'
         });
+        item.isValid = false;
       }
   
       if (item.version_enabled !== undefined && 
           typeof item.version_enabled !== 'boolean') {
-        errors.push({
-          row: index + 1,
-          field: 'version_enabled',
-          message: 'Version enabled must be true or false'
+          itemErrors.push({
+            row: index + 1,
+            field: 'version_enabled',
+            message: 'Version enabled must be true or false'
         });
+        item.isValid = false;
       }
+
+      errors.push(...itemErrors)
     });
   
     return errors;
@@ -273,18 +314,31 @@ export class FirmwareVersionModalComponent {
   }
 
   onSave(): void {
-    if (this.versionSelectionMode === 'import' && this.importedFileData.length > 0) {
-      this.importedFileData.forEach(data => {
+    if (this.versionSelectionMode === 'import') {
+      const validVersions = this.importedFileData.filter(data=>data.isValid);
+
+      if(validVersions.length===0) {
+        this.displayError('No valid versions to import');
+        return;
+      }
+
+      let successCount = 0;
+      const totalValid = validVersions.length;
+
+      validVersions.forEach(data => {
         this.dataService.createNewVersion(data).subscribe({
           next: (response) => {
             console.log('Imported version added successfully');
+            successCount++;
+            if(successCount === totalValid) {
+              this.close.emit();
+            }
           },
           error: (error) => {
             console.error('Error importing version:', error);
           }
         });
       });
-      this.close.emit();
       return;
     }
 
@@ -308,9 +362,10 @@ export class FirmwareVersionModalComponent {
         this.saveNewVersion();
       }
     }
-
+    this.importedFileData=[];
+    this.resetModal();
+    this.generalError='';
     this.close.emit();
-    this.resetForm();
   }
 
   saveExistingVersion(data: FirmwareVersionData): void {
@@ -335,12 +390,20 @@ export class FirmwareVersionModalComponent {
     });
   }
 
+  get validVersionCount(): number {
+    return this.importedFileData.filter(data => data.isValid).length;
+  }
+
+  get totalVersionCount(): number {
+    return this.importedFileData.length;
+  }
+
+  get hasValidVersions(): boolean {
+    return this.validVersionCount > 0;
+  }         
+
   closeModal() {
-    this.firmwareData.firmware_version='';
-    this.firmwareData.start_date='';
-    this.firmwareData.end_date='';
-    this.firmwareData.version_enabled=true;
-    this.generalError='';
-    this.validationErrors=[];
+    this.resetModal();
+    this.close.emit();
   }
 }
