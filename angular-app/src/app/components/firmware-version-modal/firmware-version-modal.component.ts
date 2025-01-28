@@ -32,7 +32,7 @@ export class FirmwareVersionModalComponent {
     firmware_version: '',
     start_date: '',
     end_date: '',
-    version_enabled: false
+    version_enabled: true,
   };
 
   versionSelectionMode: 'new' | 'existing' | 'import' = 'new';
@@ -42,6 +42,7 @@ export class FirmwareVersionModalComponent {
   importedFileData: any[] = [];
   validationErrors: ValidationError[] = [];
   generalError: string = '';
+  disableEnableChoice :boolean = true;
 
   constructor(private dataService: DataService) {
     this.loadExistingVersions();
@@ -52,7 +53,7 @@ export class FirmwareVersionModalComponent {
       firmware_version: '',
       start_date: '',
       end_date: '',
-      version_enabled: false
+      version_enabled: true
     };
     this.isUnique = true;
     this.importedFileData = [];
@@ -172,6 +173,14 @@ export class FirmwareVersionModalComponent {
           message: 'Invalid version format. Expected format: X.Y.Z (e.g., 1.0.0)'
         });
       }
+
+      if(item.firmware_version && this.existingVersions.includes(item.firmware_version)) {
+        errors.push({
+          row:index+1,
+          field:'firmware_version',
+          message:'Firmware version is not unique.'
+        })
+      }
   
       if (item.start_date && !this.isValidDate(item.start_date)) {
         errors.push({
@@ -227,7 +236,7 @@ export class FirmwareVersionModalComponent {
         firmware_version: '',
         start_date: '',
         end_date: '',
-        version_enabled: false
+        version_enabled: true
       };
 
       headers.forEach((header, index) => {
@@ -330,7 +339,7 @@ export class FirmwareVersionModalComponent {
     this.firmwareData.firmware_version='';
     this.firmwareData.start_date='';
     this.firmwareData.end_date='';
-    this.firmwareData.version_enabled=false;
+    this.firmwareData.version_enabled=true;
     this.generalError='';
     this.validationErrors=[];
   }

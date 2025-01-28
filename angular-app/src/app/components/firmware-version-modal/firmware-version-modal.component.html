@@ -83,7 +83,7 @@
                 [(ngModel)]="firmwareData.firmware_version"
                 (ngModelChange)="checkVersionUniqueness()"
                 class="form-control"
-                placeholder="Enter new meter type"
+                placeholder="Enter new firmware version"
               />
               <select
                 *ngIf="versionSelectionMode === 'existing'"
@@ -114,6 +114,7 @@
                 type="date"
                 [(ngModel)]="firmwareData.start_date"
                 class="form-control"
+                [disabled]="!firmwareData.version_enabled"
               />
             </div>
           </div>
@@ -125,12 +126,13 @@
                 type="date"
                 [(ngModel)]="firmwareData.end_date"
                 class="form-control"
+                [disabled]="!firmwareData.version_enabled"
               />
             </div>
           </div>
 
           <div class="form-group form-group-last">
-            <div class="input-row">
+            <div *ngIf="versionSelectionMode === 'existing'" class="input-row">
               <label>Version Status:</label>
               <select
                 [(ngModel)]="firmwareData.version_enabled"
@@ -140,6 +142,19 @@
                 <option [ngValue]="false">Disabled</option>
               </select>
             </div>
+
+            <!-- new -->
+            <div *ngIf="versionSelectionMode === 'new'" class="input-row" >
+              <label>Version Status:</label>
+              <select
+                [(ngModel)]="firmwareData.version_enabled"
+                class="form-control form-dropdown"
+                [disabled]="disableEnableChoice"
+              >
+                <option [ngValue]="true">Enabled</option>
+              </select>
+            </div>
+
           </div>
         </ng-container>
       </div>
