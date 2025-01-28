@@ -466,7 +466,6 @@ app.patch('/api/data/firmware_versions', (req, res) => {
   
   const { firmware_version, start_date, end_date, version_enabled } = req.body;
   
-  // Validate required fields
   if (!firmware_version) {
     return res.status(400).json({ error: 'Firmware version is required' });
   }
@@ -489,12 +488,10 @@ app.patch('/api/data/firmware_versions', (req, res) => {
     queryParams.push(version_enabled);
   }
   
-  // Ensure we have fields to update
   if (updateFields.length === 0) {
     return res.status(400).json({ error: 'No fields to update' });
   }
   
-  // Add the version to the query parameters
   queryParams.push(firmware_version);
   
   const query = `UPDATE firmware_versions SET ${updateFields.join(', ')} WHERE firmware_version = ?`;

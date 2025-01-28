@@ -31,10 +31,11 @@
           <div class="form-group">
             <label>Firmware Version:</label>
             <select 
-              [(ngModel)]="editedFirmwareData.Firmware_version" 
+              [(ngModel)]="selectedVersion" 
               class="form-control"
               (change)="onFirmwareVersionChange($event)"
             >
+              <option value="">Select Version</option>
               <option *ngFor="let version of firmwareVersions" [value]="version.firmware_version">
                 {{ version.firmware_version }}
               </option>
@@ -48,6 +49,7 @@
               class="form-control"
               [min]="activationDateMin"
               [max]="activationDateMax"
+              [disabled]="!isVersionSelected"
             >
           </div>
           <div class="form-group">

@@ -22,10 +22,13 @@ export class FirmwareModalComponent implements OnInit {
   firmwareVersions: any[] = [];
   activationDateMin: string = '';
   activationDateMax: string = '';
+  isVersionSelected: boolean = false;
+  selectedVersion: string = '';
 
   constructor(private dataService: DataService) {}
 
   ngOnInit() {
+    this.resetForm();
     this.dataService.getFirmwareVersion().subscribe({
       next: (versions) => {
         this.firmwareVersions = versions;
@@ -34,6 +37,12 @@ export class FirmwareModalComponent implements OnInit {
         console.error('Error fetching firmware versions:', error);
       }
     });
+  }
+
+  resetForm() {
+    this.editedFirmwareData = {};
+    this.isVersionSelected = false;
+    this.selectedVersion = '';
   }
 
   formatDate(dateString: string | undefined): string {
@@ -48,9 +57,11 @@ export class FirmwareModalComponent implements OnInit {
     );
 
     if (selectedVersion) {
+      this.isVersionSelected = true;
       this.activationDateMin = this.formatDate(selectedVersion.start_date);
       this.activationDateMax = this.formatDate(selectedVersion.end_date);
       this.editedFirmwareData.activation_date = this.activationDateMin;
+      this.editedFirmwareData.Firmware_version = event.target.value;
     }
   }
 
