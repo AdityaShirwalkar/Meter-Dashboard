@@ -17,6 +17,15 @@ interface StateData {
   mode: string;
 }
 
+interface MeterData {
+  UnitNo : string;
+  Metertype : string;
+  Model : string;
+  description : string;
+  ip_address : string;
+  communication_id : string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -168,6 +177,16 @@ getData(tableName: string): Observable<any[]> {
     return this.http.post<any>(`${this.apiUrl}/meter`, data).pipe(
       catchError(error => {
         console.error('Error in createNewMeter:', error);
+        throw error;
+      })
+    );
+  }
+
+  updateMeter(data:MeterData):Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/metertable/${data.UnitNo}`,data).pipe(
+      tap(response => console.log('Meter update response:',response)),
+      catchError(error => {
+        console.error('Error in updateMeter:',error);
         throw error;
       })
     );

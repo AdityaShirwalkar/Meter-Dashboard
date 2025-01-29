@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { RouterModule } from '@angular/router';
+import { MeterUpdateModalComponent } from '../meter-update-modal/meter-update-modal.component';
 
 interface MeterData {
   UnitNo: string;
@@ -15,15 +16,17 @@ interface MeterData {
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,MeterUpdateModalComponent],
   templateUrl: './devices.component.html',
   styleUrl: './devices.component.css'
 })
 export class DevicesComponent implements OnInit {
   allDevices: MeterData[] = [];
   filteredDevices: MeterData[] = [];
-  selectedType: string = 'A';
-  meterTypes: string[] = ['A', 'B', 'C', 'D'];
+  selectedType: string = '';
+  meterTypes: string[] = [];
+  selectedMeter: MeterData | null = null;
+  isModalVisible: boolean = false;
 
   constructor(private dataService: DataService) {}
 
@@ -35,8 +38,11 @@ export class DevicesComponent implements OnInit {
     this.dataService.getData('MeterTable').subscribe({
       next: (data: MeterData[]) => {
         this.allDevices = data;
-        this.updateMeterTypes();
-        this.filterDevices(this.selectedType);
+        this.extractMeterTypes();
+        if (this.meterTypes.length > 0) {
+          this.selectedType = this.meterTypes[0];
+          this.filterDevices(this.selectedType);
+        }
       },
       error: (error) => {
         console.error('Error fetching devices:', error);
@@ -44,11 +50,31 @@ export class DevicesComponent implements OnInit {
     });
   }
 
-  updateMeterTypes() {
-    this.meterTypes = this.meterTypes.filter(type=> this.getTypeCount(type)>0);
-    if(!this.meterTypes.includes(this.selectedType)) {
-      this.selectedType=this.meterTypes[0] || '';
+  handleMeterUpdate(updatedMeter: MeterData) {
+    const index = this.allDevices.findIndex(m => m.UnitNo === updatedMeter.UnitNo);
+    if (index !== -1) {
+      this.allDevices[index] = updatedMeter;
+      this.filterDevices(this.selectedType);
     }
+    this.dataService.updateMeter(updatedMeter).subscribe({
+      next: () => {
+        console.log('Meter updated successfully');
+      },
+      error: (error) => {
+        console.error('Error updating meter:', error);
+      }
+    });
+  }
+
+  extractMeterTypes() {
+    const typeSet = new Set(
+      this.allDevices.map(device => {
+        const match = device.Metertype.match(/Type([A-Z])/);
+        return match ? match[1] : null;
+      }).filter(type => type !== null)
+    );
+    
+    this.meterTypes = Array.from(typeSet).sort();
   }
 
   selectType(type: string) {
@@ -66,5 +92,15 @@ export class DevicesComponent implements OnInit {
     return this.allDevices.filter(
       device => device.Metertype === `Type${type}`
     ).length;
+  }
+
+  openMeterModal(meter:MeterData) {
+    this.selectedMeter=meter;
+    this.isModalVisible= true;
+  }
+
+  closeModal() {
+    this.isModalVisible=false;
+    this.selectedMeter=null;
   }
 }

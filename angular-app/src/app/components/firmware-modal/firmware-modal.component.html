@@ -63,7 +63,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn-close" (click)="close.emit()">Cancel</button>
-        <button class="btn-update" *ngIf="isUpdating" (click)="onUpdate()">Modify</button>
+        <button class="btn-update" *ngIf="isUpdating" (click)="onUpdate()" [disabled]="!isVersionSelected">Modify</button>
       </div>
     </div>
   </div>

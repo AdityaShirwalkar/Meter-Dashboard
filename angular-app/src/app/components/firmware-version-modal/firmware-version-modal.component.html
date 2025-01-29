@@ -68,7 +68,7 @@
           </div>
           
           <div *ngIf="importedFileData.length > 0" class="imported-data-preview">
-            <p> Found {{importedFileData.length}} firmware versions
+            <p *ngIf="!emptyImport"> Found {{importedFileData.length}} firmware versions
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@
               importedFileData.length === 0) ||
             (versionSelectionMode !== 'import' &&
               (!isFormValid ||
-                (!isNewVersion && !firmwareData.firmware_version)))
+                (!isNewVersion && !firmwareData.firmware_version))&& 'emptyImport')
           "
           (click)="onSave()"
         >

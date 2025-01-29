@@ -53,6 +53,7 @@ export class FirmwareVersionModalComponent {
   validationErrors: ValidationError[] = [];
   generalError: string = '';
   disableEnableChoice :boolean = true;
+  emptyImport: boolean = false;
 
   constructor(private dataService: DataService) {
     this.loadExistingVersions();
@@ -68,6 +69,7 @@ export class FirmwareVersionModalComponent {
     this.clearFileInput();
     this.generalError='';
     this.importedFileData=[];
+    this.emptyImport = false;
   }
 
   resetModal(): void {
@@ -79,6 +81,7 @@ export class FirmwareVersionModalComponent {
     this.versionSelectionMode = 'new';
     this.isNewVersion = true;
     this.isUnique = true;
+    this.emptyImport = false;
   }
 
   clearFileInput(): void {
@@ -318,6 +321,8 @@ export class FirmwareVersionModalComponent {
       const validVersions = this.importedFileData.filter(data=>data.isValid);
 
       if(validVersions.length===0) {
+        this.emptyImport = true;
+        this.clearFileInput();
         this.displayError('No valid versions to import');
         return;
       }
@@ -329,8 +334,12 @@ export class FirmwareVersionModalComponent {
         this.dataService.createNewVersion(data).subscribe({
           next: (response) => {
             console.log('Imported version added successfully');
+            if(!this.existingVersions.includes(data.firmware_version)) {
+              this.existingVersions.push(data.firmware_version);
+            }
             successCount++;
             if(successCount === totalValid) {
+              this.existingVersions.sort();
               this.close.emit();
             }
           },
@@ -358,6 +367,7 @@ export class FirmwareVersionModalComponent {
     } else if (this.versionSelectionMode === 'new') {
       if (this.isFormValid && !this.existingVersions.includes(saveData.firmware_version)) {
         this.existingVersions.push(saveData.firmware_version);
+        this.existingVersions.sort();
         this.save.emit(saveData);
         this.saveNewVersion();
       }

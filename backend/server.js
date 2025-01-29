@@ -182,7 +182,6 @@ app.post('/api/users/reset-password', authenticateToken, async (req, res) => {
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
 
-  // Validate input
   if (!username || !password) {
     return res.status(400).json({ message: 'Username and password are required' });
   }
@@ -197,10 +196,8 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'Username already exists' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user
     await connection.promise().query(
       'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
       [username, hashedPassword, 'user']
@@ -230,14 +227,12 @@ app.post('/api/login', async (req, res) => {
 
     const user = users[0];
     
-    // For debugging (remove in production)
-    console.log('Login attempt:', {
-      username,
-      providedPassword: password,
-      storedHash: user.password
-    });
+    // console.log('Login attempt:', {
+    //   username,
+    //   providedPassword: password,
+    //   storedHash: user.password
+    // });
 
-    // Compare password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
@@ -245,7 +240,6 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate token
     const token = jwt.sign(
       { 
         id: user.id, 
@@ -256,20 +250,17 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // Generate refresh token
     const refreshToken = jwt.sign(
       { id: user.id },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // Update refresh token in database
     await connection.promise().query(
       'UPDATE users SET refresh_token = ? WHERE id = ?',
       [refreshToken, user.id]
     );
 
-    // Send response
     res.json({
       token,
       refreshToken,
@@ -404,6 +395,42 @@ app.get('/api/data/:tableName', (req, res) => {
     }
   });
 });
+
+//Update meter data
+app.put('/api/data/metertable/:unitNo',(req,res) => {
+  const {unitNo} = req.params;
+  const {Metertype,Model,description,ip_address,communication_id} = req.body;
+
+  const query = `UPDATE MeterTable 
+        SET Metertype = ?, 
+        Model = ?, 
+        description = ?, 
+        ip_address = ?, 
+        communication_id = ?
+        WHERE UnitNo=?`
+  
+  connection.query(
+    query,
+    [Metertype,Model,description,ip_address,communication_id,unitNo],
+    (err,result) => {
+      if(err) {
+        console.error('Database error:',err);
+        res.status(500).json({error:err.message});
+        return;
+      }
+
+      if(result.affectedRows === 0) {
+        res.status(400).json({error:'Meter not found'});
+        return;
+      }
+
+      res.json({
+        message:'Meter Updated Successfully',
+        affectedRows: result.affectedRows
+      });
+    }
+  )
+})
 
 // firmware details
 app.get('/api/data/firmware/:unitNo',(req, res) => {

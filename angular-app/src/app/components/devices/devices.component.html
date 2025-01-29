@@ -30,7 +30,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let device of filteredDevices">
+            <tr *ngFor="let device of filteredDevices"
+            (click)="openMeterModal(device)"
+            style="cursor:pointer">
               <td>{{device.UnitNo}}</td>
               <td>{{device.Model}}</td>
               <td>{{device.description}}</td>
@@ -42,4 +44,11 @@
       </div>
     </div>
   </div>
+
+  <app-meter-update-modal
+  [meter]="selectedMeter"
+  [isVisible]="isModalVisible"
+  (close)="closeModal()"
+  (update)="handleMeterUpdate($event)">
+  </app-meter-update-modal>
 </div>
