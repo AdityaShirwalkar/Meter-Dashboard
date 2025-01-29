@@ -23,43 +23,23 @@
 
         <div class="modal-content-row">
           <span class="modal-content-label">Description:</span>
-          <ng-container *ngIf="!isEditing">
-            <span class="modal-content-value">{{ meter?.description }}</span>
-          </ng-container>
-          <ng-container *ngIf="isEditing">
-            <input type="text" class="form-control" [(ngModel)]="editedMeter!.description">
-          </ng-container>
+          <input type="text" class="form-control" [(ngModel)]="editedMeter!.description">
         </div>
 
         <div class="modal-content-row">
           <span class="modal-content-label">IP Address:</span>
-          <ng-container *ngIf="!isEditing">
-            <span class="modal-content-value">{{ meter?.ip_address }}</span>
-          </ng-container>
-          <ng-container *ngIf="isEditing">
-            <input type="text" class="form-control" [(ngModel)]="editedMeter!.ip_address">
-          </ng-container>
+          <input type="text" class="form-control" [(ngModel)]="editedMeter!.ip_address">
         </div>
 
         <div class="modal-content-row">
           <span class="modal-content-label">Communication ID:</span>
-          <ng-container *ngIf="!isEditing">
-            <span class="modal-content-value">{{ meter?.communication_id }}</span>
-          </ng-container>
-          <ng-container *ngIf="isEditing">
-            <input type="text" class="form-control" [(ngModel)]="editedMeter!.communication_id">
-          </ng-container>
+          <input type="text" class="form-control" [(ngModel)]="editedMeter!.communication_id">
         </div>
       </div>
 
       <div class="modal-footer">
         <button class="btn-close" (click)="onClose()">Close</button>
-        <ng-container *ngIf="!isEditing">
-          <button class="btn-update" (click)="onModifyClick()">Modify</button>
-        </ng-container>
-        <ng-container *ngIf="isEditing">
-          <button class="btn-update" (click)="onSubmit()">Submit</button>
-        </ng-container>
+        <button class="btn-update" (click)="onSubmit()">Submit</button>
       </div>
     </div>
   </div>

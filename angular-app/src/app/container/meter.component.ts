@@ -96,6 +96,7 @@ export class MeterComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.authState$.subscribe(isAuthenticated => {
       if (isAuthenticated) {
         this.fetchData(this.currentTable);
+        this.isUserMenuOpen = false;
       } else {
         this.router.navigate(['/login']);
       }

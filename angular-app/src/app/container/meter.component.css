@@ -275,24 +275,6 @@ app-meter-list {
   background-color: transparent;
   margin-top: auto;
   width: 100%;
-  gap: 1.25rem;
-}
-
-.button-container .btn-action {
-  flex: 1;
-  text-align: center;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 0;
-  background-color: transparent;
-  margin-top: auto;
-  width: 100%;
   gap: 1.5rem;
 }
 

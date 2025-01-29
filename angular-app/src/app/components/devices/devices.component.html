@@ -31,8 +31,9 @@
           </thead>
           <tbody>
             <tr *ngFor="let device of filteredDevices"
-            (click)="openMeterModal(device)"
-            style="cursor:pointer">
+            (click)="onRowClick($event,device)"
+            style="cursor:pointer"
+            [class.selected]="device===selectedRow">
               <td>{{device.UnitNo}}</td>
               <td>{{device.Model}}</td>
               <td>{{device.description}}</td>
@@ -42,6 +43,9 @@
           </tbody>
         </table>
       </div>
+    </div>
+    <div class="button-container">
+      <button class="btn-action" [disabled]="!selectedRow" (click)="openMeterModal()" >Modify</button>
     </div>
   </div>
 

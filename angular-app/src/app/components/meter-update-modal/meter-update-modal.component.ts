@@ -23,24 +23,28 @@ export class MeterUpdateModalComponent {
   @Input() isVisible: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() update = new EventEmitter<MeterData>();
-  isEditing: boolean = false;
   editedMeter: MeterData|null = null;
 
-  onModifyClick():void {
-    this.isEditing = true;
-    this.editedMeter = {...this.meter!};
+  ngOnInit() {
+    if (this.meter) {
+      this.editedMeter = {...this.meter};
+    }
+  }
+
+  ngOnChanges() {
+    if (this.meter) {
+      this.editedMeter = {...this.meter};
+    }
   }
 
   onSubmit():void {
     if(this.editedMeter) {
       this.update.emit(this.editedMeter);
-      this.isEditing = false;
       this.close.emit();
     }
   }
 
   onClose(): void {
-    this.isEditing = false;
     this.editedMeter = null;
     this.close.emit();
   }

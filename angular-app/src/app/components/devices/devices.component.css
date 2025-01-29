@@ -144,6 +144,78 @@ tbody tr:hover {
   background-color: #f8fafc;
 }
 
+tr.selected {
+  background-color: #e8f6f3 !important;
+  transition: background-color 0.3s ease;
+}
+
+.btn-action {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.85rem;
+  border-radius: 12px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2),
+              0 1px 3px rgba(0, 0, 0, 0.08);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  outline: none;
+}
+
+.btn-action:not(:disabled) {
+  /* background-color: #2ecc71; */
+  background-color: #33b249;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.btn-action:not(:disabled):hover {
+  /* background-color: #27ae60; */
+  background-color: #2fa042;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 12px rgba(46, 204, 113, 0.25),
+              0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-action:not(:disabled):active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2);
+}
+
+.btn-action:disabled {
+  /* background-color: #bdc3c7; */
+  background-color: #00ff2a4d;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+.button-container {
+  display:flex;
+  padding: 1rem 0;
+  background-color: transparent;
+  margin-top: 1.2rem;
+  gap: 1.5rem;
+  justify-content: flex-end;
+  }
+
+.button-container .btn-action {
+  text-align: center;
+  display: flex;
+  min-height: 44px;
+  align-items: left;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

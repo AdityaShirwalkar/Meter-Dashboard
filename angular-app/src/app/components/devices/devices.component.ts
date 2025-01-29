@@ -27,6 +27,7 @@ export class DevicesComponent implements OnInit {
   meterTypes: string[] = [];
   selectedMeter: MeterData | null = null;
   isModalVisible: boolean = false;
+  selectedRow : any = null;
   @Output() modify = new EventEmitter<MeterData>();
 
   constructor(private dataService: DataService) {}
@@ -96,8 +97,13 @@ export class DevicesComponent implements OnInit {
     ).length;
   }
 
-  openMeterModal(meter:MeterData) {
+  onRowClick(row:any,meter:MeterData) :void {
+    this.selectedRow = meter;
     this.selectedMeter=meter;
+  }
+
+  openMeterModal() {
+    // this.selectedMeter=meter;
     this.isModalVisible= true;
   }
 
@@ -107,5 +113,6 @@ export class DevicesComponent implements OnInit {
       this.modify.emit(this.selectedMeter);
     }
     this.selectedMeter=null;
+    this.selectedRow=null;
   }
 }
