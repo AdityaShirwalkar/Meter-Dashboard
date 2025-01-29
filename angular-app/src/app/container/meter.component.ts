@@ -321,6 +321,10 @@ handleUsernameClick() {
     };
   }
 
+  handleUpdate(updatedValue:any) {
+    this.fetchData(this.currentTable);
+  }
+
   handleError(error: any): void {
     console.error('An error occurred:', error);
   }

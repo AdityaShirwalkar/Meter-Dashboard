@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output,EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { RouterModule } from '@angular/router';
@@ -27,6 +27,7 @@ export class DevicesComponent implements OnInit {
   meterTypes: string[] = [];
   selectedMeter: MeterData | null = null;
   isModalVisible: boolean = false;
+  @Output() modify = new EventEmitter<MeterData>();
 
   constructor(private dataService: DataService) {}
 
@@ -59,6 +60,7 @@ export class DevicesComponent implements OnInit {
     this.dataService.updateMeter(updatedMeter).subscribe({
       next: () => {
         console.log('Meter updated successfully');
+        this.modify.emit(updatedMeter);
       },
       error: (error) => {
         console.error('Error updating meter:', error);
@@ -101,6 +103,9 @@ export class DevicesComponent implements OnInit {
 
   closeModal() {
     this.isModalVisible=false;
+    if(this.selectedMeter) {
+      this.modify.emit(this.selectedMeter);
+    }
     this.selectedMeter=null;
   }
 }

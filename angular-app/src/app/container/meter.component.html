@@ -62,7 +62,7 @@
 
     <app-firmware-details *ngIf="currentView === 'firmware'"></app-firmware-details>
     <app-state-details *ngIf="currentView === 'state'"></app-state-details>
-    <app-devices *ngIf="currentView=== 'devices'"></app-devices>
+    <app-devices *ngIf="currentView=== 'devices'" (modify)="handleUpdate($event)"></app-devices>
 
     <app-firmware-modal
       [isOpen]="isFirmwareModalOpen"
