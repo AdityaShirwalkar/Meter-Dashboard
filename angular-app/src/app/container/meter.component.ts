@@ -104,6 +104,7 @@ export class MeterComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    this.selectedRow = null;
     this.authService.logout();
     localStorage.removeItem('username');
     this.router.navigate(['/login']);

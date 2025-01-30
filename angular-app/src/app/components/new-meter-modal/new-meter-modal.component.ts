@@ -60,11 +60,29 @@ export class NewMeterModalComponent implements OnInit {
     }
   }
 
+  checkIpAddress():boolean {
+    if(this.newMeterData.ip_address) {
+      const ip = this.newMeterData.ip_address.split('.');
+
+      if(ip.length!=4)  return false;
+
+      return ip.every((ip_add:string) => {
+        if (!/^\d+$/.test(ip_add)) {
+          return false;
+        }
+        const num = parseInt(ip_add, 10);
+        return num >= 0 && num <= 255 && !isNaN(num);
+      });
+    }
+    return false;
+  }
+
   get isFormValid(): boolean {
     return !!(
       this.newMeterData.UnitNo &&
       this.newMeterData.Metertype &&
       this.newMeterData.Metertype.startsWith('Type') &&
+      this.checkIpAddress() &&
       this.newMeterData.Metertype.length>4&&
       this.newMeterData.Model &&
       this.newMeterData.description &&
