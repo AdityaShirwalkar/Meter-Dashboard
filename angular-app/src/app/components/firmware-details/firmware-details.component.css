@@ -222,6 +222,8 @@ tbody tr:hover {
 
 .firmware-content {
   animation: fadeIn 0.3s ease-out;
+  height: 100%;
+  position: relative;
 }
 
 .delete-icon{

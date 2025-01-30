@@ -47,8 +47,8 @@ export class FirmwareModalComponent implements OnInit {
 
   formatDate(dateString: string | undefined): string {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    return new Date(dateString).toLocaleDateString();
+
   }
 
   onFirmwareVersionChange(event: any) {
