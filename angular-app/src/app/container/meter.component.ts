@@ -320,6 +320,7 @@ handleUsernameClick() {
       ip_address: '',
       communication_id: ''
     };
+    // this.selectedRow = null;
   }
 
   handleUpdate(updatedValue:any) {

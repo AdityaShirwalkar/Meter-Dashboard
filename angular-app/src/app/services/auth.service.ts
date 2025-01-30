@@ -112,7 +112,7 @@ export class AuthService {
     console.log('Attempting login for:', username);
     return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
       tap(response => {
-        console.log('Login response:', response);
+        // console.log('Login response:', response);
         if (response && response.token) { 
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', response.token); 

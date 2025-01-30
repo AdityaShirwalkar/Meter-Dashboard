@@ -82,6 +82,8 @@ export class DevicesComponent implements OnInit {
 
   selectType(type: string) {
     this.selectedType = type;
+    this.selectedMeter=null;
+    this.selectedRow=null;
     this.filterDevices(type);
   }
 
@@ -97,7 +99,7 @@ export class DevicesComponent implements OnInit {
     ).length;
   }
 
-  onRowClick(row:any,meter:MeterData) :void {
+  onRowClick(meter:MeterData) :void {
     this.selectedRow = meter;
     this.selectedMeter=meter;
   }

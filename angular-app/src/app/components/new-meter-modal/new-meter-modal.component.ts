@@ -28,6 +28,10 @@ export class NewMeterModalComponent implements OnInit {
     this.loadExistingData();
   }
 
+  get isValidMeterTypeFormat(): boolean {
+    return !this.newMeterData.Metertype || this.newMeterData.Metertype.startsWith('Type');
+  }
+
   loadExistingData() {
     this.dataService.getData('MeterTable').subscribe({
       next: (data: any[]) => {
@@ -60,6 +64,8 @@ export class NewMeterModalComponent implements OnInit {
     return !!(
       this.newMeterData.UnitNo &&
       this.newMeterData.Metertype &&
+      this.newMeterData.Metertype.startsWith('Type') &&
+      this.newMeterData.Metertype.length>4&&
       this.newMeterData.Model &&
       this.newMeterData.description &&
       this.newMeterData.ip_address &&

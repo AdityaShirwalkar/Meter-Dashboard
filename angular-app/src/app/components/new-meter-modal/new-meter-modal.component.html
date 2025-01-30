@@ -40,6 +40,7 @@
             </select>
           </div>
           <span *ngIf="!isMeterTypeUnique && isNewMeterType && newMeterData.Metertype" class="error-message">Meter type already exists</span>
+          <span *ngIf="!isValidMeterTypeFormat" class="error-message">The meter type should be of format "TypeX"</span>
         </div>
 
         <div class="form-group">

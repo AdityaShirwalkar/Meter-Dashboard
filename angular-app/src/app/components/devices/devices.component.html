@@ -31,7 +31,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let device of filteredDevices"
-            (click)="onRowClick($event,device)"
+            (click)="onRowClick(device)"
             style="cursor:pointer"
             [class.selected]="device===selectedRow">
               <td>{{device.UnitNo}}</td>
