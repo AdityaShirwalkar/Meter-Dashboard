@@ -1,0 +1,11 @@
+<div *ngIf="showModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Session Timeout Warning</h2>
+      <p>Your session will expire in {{ remainingTime }} seconds due to inactivity.</p>
+      <p>Move your mouse or press any key to stay logged in.</p>
+      <div class="modal-actions">
+        <button (click)="stay()" class="btn-primary">Stay Logged In</button>
+        <!-- <button (click)="logout()" class="btn-secondary">Logout</button> -->
+      </div>
+    </div>
+  </div>

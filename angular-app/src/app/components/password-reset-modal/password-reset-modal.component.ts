@@ -195,7 +195,7 @@ import { AuthService } from '@app/services/auth.service';
 
       .modal-footer {
         padding: 1.2rem;
-        // text-align: right;
+        /*text-align: right;*/
         display: flex;
         align-items:center;
         justify-content: space-between;

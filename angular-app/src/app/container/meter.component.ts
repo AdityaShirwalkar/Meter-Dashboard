@@ -19,6 +19,8 @@ import { RegisterComponent } from '@app/components/register/register.component';
 import { UserService } from '@app/services/user.service';
 import { UserManagementComponent } from '@app/components/user-management/user-management.component';
 import { PasswordResetModalComponent } from '@app/components/password-reset-modal/password-reset-modal.component';
+import { IdleTimeoutService } from '@app/services/idle-timeout.service';
+import { IdleWarningModalComponent } from '@app/components/idle-warning-modal/idle-warning-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +31,7 @@ import { PasswordResetModalComponent } from '@app/components/password-reset-moda
     FormsModule,
     RouterModule,
     PasswordResetModalComponent,
+    IdleWarningModalComponent,
     MeterListComponent,
     UserManagementComponent,
     FirmwareModalComponent,
@@ -82,7 +85,8 @@ export class MeterComponent implements OnInit, OnDestroy {
     private dataService: DataService,
     private authService: AuthService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private idleTimeoutService:IdleTimeoutService
   ) {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
@@ -97,6 +101,7 @@ export class MeterComponent implements OnInit, OnDestroy {
       if (isAuthenticated) {
         this.fetchData(this.currentTable);
         this.isUserMenuOpen = false;
+        this.idleTimeoutService.startWatching();
       } else {
         this.router.navigate(['/login']);
       }
@@ -156,6 +161,7 @@ export class MeterComponent implements OnInit, OnDestroy {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    this.idleTimeoutService.stopWatching();
   }
 
   onUserLogin(username: string) {
