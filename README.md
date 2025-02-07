@@ -114,7 +114,7 @@ Feel free to fork the repository and submit pull requests for enhancements or bu
 
 ## **Contact Information**
 
-For any questions or support, please contact [[adityashirwalkar@gmail.com](mailto\:adityashirwalkar@gmail.com)].
+For any questions or support, please contact [[adityashirwalkar.26@gmail.com](mailto\:adityashirwalkar.26@gmail.com)].
 
 Aditya Shirwalkar
 
